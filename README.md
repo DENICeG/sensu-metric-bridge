@@ -9,15 +9,15 @@ seconds_since_last_successful_run 46598.538422381`
 
 - metric with fields and only the $relevantPrefix as identifier, like  
 ```
-metrics_myApp{domain="DB",item="TransactionsTotal"} 17
+metrics_myApp{somefield="DB",someotherfield="TransactionsTotal"} 17
 -------------
       ^--- $relevantPrefix argument
 ```
 
 - metric with fields, $relevantPrefix + another constant identifier, like  
 ```
-myApp_return_proc{task="files",result="err"} 0
-                 -----------
-----------------      ^--- additional identifier
-      ^--- $relevantPrefix argument
+myApp_return_proc{somefield="files",someotherfield="err"} 0
+      -----------
+-----      ^--- additional identifier
+  ^--- $relevantPrefix argument
 ```
