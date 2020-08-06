@@ -119,6 +119,7 @@ func transformPrometheusToInfluxCaseC(metric, relevantPrefix string) string {
 	metricValue := strings.Split(metric, " ")[1]
 	additionalIdentifier := strings.TrimPrefix(metric, relevantPrefix+"_")
 	additionalIdentifier = strings.Split(additionalIdentifier, "{")[0]
+	additionalIdentifier = strings.Split(additionalIdentifier, " ")[0]
 	return prmMeasurementName + ",item=" + additionalIdentifier + tags + " value=" + metricValue + " " + nowTS
 }
 

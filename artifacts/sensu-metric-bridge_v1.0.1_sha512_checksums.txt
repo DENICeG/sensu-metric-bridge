@@ -1,0 +1,1 @@
+51c2328c6a72f58c93f5a336b84c59ac00eeedb6a549317f4769f64f4f2e84bd41f58fd2d2565dfd9bb30e2ee1eb881639f56c059c0b9d7cde23c7d4cdedfb0d  sensu-metric-bridge_v1.0.1_linux_amd64.tar.gz
