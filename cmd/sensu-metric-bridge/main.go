@@ -56,54 +56,70 @@ func main() {
 	s := bufio.NewScanner(resp.Body)
 	for s.Scan() {
 		line := s.Text()
-		if metricHasRelevantPrefix(line) {
-			output += transformPrometheusToInflux(line) + "\n"
+
+		for _, relevantPrefix := range strings.Split(prmRelevantPrefixes, ",") {
+			if metricEqualsRelevantPrefix(line, relevantPrefix) {
+				output += transformPrometheusToInfluxCaseA(line) + "\n"
+			} else if metricHasRelevantPrefixOnly(line, relevantPrefix) {
+				output += transformPrometheusToInfluxCaseB(line) + "\n"
+			} else if metricHasRelevantPrefixAndAdditionalIdentifier(line, relevantPrefix) {
+				output += transformPrometheusToInfluxCaseC(line, relevantPrefix) + "\n"
+			}
 		}
 	}
 
 	fmt.Println(output)
 }
 
-func metricHasRelevantPrefix(metric string) bool {
-
-	var hasRelevantPrefix bool
-
-	for _, relevantPrefix := range strings.Split(prmRelevantPrefixes, ",") {
-		relevantPrefix = strings.TrimSpace(relevantPrefix)
-
-		if strings.HasPrefix(metric, relevantPrefix) {
-			hasRelevantPrefix = true
-			break
-		}
-	}
-
-	return hasRelevantPrefix
+func metricEqualsRelevantPrefix(metric, relevantPrefix string) bool {
+	return strings.HasPrefix(metric, relevantPrefix+" ")
 }
 
-func transformPrometheusToInflux(metric string) string {
+func metricHasRelevantPrefixOnly(metric, relevantPrefix string) bool {
+	return strings.HasPrefix(metric, relevantPrefix+"{")
+}
+
+func metricHasRelevantPrefixAndAdditionalIdentifier(metric, relevantPrefix string) bool {
+	return strings.HasPrefix(metric, relevantPrefix+"_")
+}
+
+// Case: simple case, like
+//   seconds_since_last_successful_run 46598.538422381
+func transformPrometheusToInfluxCaseA(metric string) string {
 
 	line := strings.Split(metric, " ")
 	metricLHS := line[0]
 	metricRHS := line[1]
 
-	// Case: simple case, like
-	//   seconds_since_last_successful_run 46598.538422381
-	if !strings.Contains(metric, "{") {
-		return prmMeasurementName + ",item=" + metricLHS + " value=" + metricRHS + " " + nowTS
-	}
+	return prmMeasurementName + ",item=" + metricLHS + " value=" + metricRHS + " " + nowTS
+}
 
-	// Case: metric with fields and only the relevantPrefix as identifier, like
-	//   metrics_DBPuller{domain="DB",item="TransactionsTotal"} 17
+// Case: metric with fields and only the relevantPrefix as identifier, like
+//   metrics_DBPuller{domain="DB",item="TransactionsTotal"} 17
+func transformPrometheusToInfluxCaseB(metric string) string {
+
 	var tags string
 	for _, tag := range extractTags(metric) {
 		tags += "," + tag.Key + "=" + tag.Value
 	}
 
-	return prmMeasurementName + tags + " value=" + metricRHS + " " + nowTS
+	metricValue := strings.Split(metric, " ")[1]
+	return prmMeasurementName + tags + " value=" + metricValue + " " + nowTS
+}
 
-	// Case: metric with fields, relevantPrefix and another constant identifier, like
-	//    contactvalidator_return_proc{field="files",result="err"} 0
-	// TODO
+// Case: metric with fields, relevantPrefix and another constant identifier, like
+//    contactvalidator_return_proc{field="files",result="err"} 0
+func transformPrometheusToInfluxCaseC(metric, relevantPrefix string) string {
+
+	var tags string
+	for _, tag := range extractTags(metric) {
+		tags += "," + tag.Key + "=" + tag.Value
+	}
+
+	metricValue := strings.Split(metric, " ")[1]
+	additionalIdentifier := strings.TrimPrefix(metric, relevantPrefix+"_")
+	additionalIdentifier = strings.Split(additionalIdentifier, "{")[0]
+	return prmMeasurementName + ",item=" + additionalIdentifier + tags + " value=" + metricValue + " " + nowTS
 }
 
 func extractTags(metric string) []TagSet {
