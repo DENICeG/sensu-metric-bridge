@@ -3,5 +3,5 @@ api_version: core/v2
 metadata:
   name: sensu-metric-bridge
 spec:
-  sha512: 4383bfe92386e9af982eb2ddcc71589e0c52728a0496fbe513285e69fc428724b4be0da1f9efb80546e418d1b58c3145b205a2fd8301636c48e37624c9e0b958
-  url: https://github.com/DENICeG/sensu-metric-bridge/releases/download/v1.3.1/sensu-metric-bridge_v1.3.1_linux_amd64.tar.gz
+  sha512: a6788ec3a6d73a8e01418085cfa0061aed8a96f8fc94535d7a0f32188a2e4ff76719799d6e0191c632fc2bd803d3151b1a9612c83a9aac09fc0bd5ae16ef4803
+  url: https://github.com/DENICeG/sensu-metric-bridge/releases/download/v0.1.0/sensu-metric-bridge_v0.1.0_linux_amd64.tar.gz
