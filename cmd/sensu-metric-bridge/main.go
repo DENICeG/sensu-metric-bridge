@@ -40,10 +40,7 @@ func main() {
 
 	prmMeasurementName = whiteflag.GetString("m")
 	prmFromEndpoint = whiteflag.GetString("f")
-
-	if whiteflag.CheckString("r") {
-		prmRelevantPrefixes = whiteflag.GetString("r")
-	}
+	prmRelevantPrefixes = whiteflag.GetString("r")
 
 	resp, err := http.Get(prmFromEndpoint)
 	if err != nil {
