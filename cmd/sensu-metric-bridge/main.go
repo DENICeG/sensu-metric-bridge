@@ -33,7 +33,7 @@ func main() {
 	whiteflag.Alias("f", "fromEndpoint", "endpoint to scrape (http://url:port/path)")
 	whiteflag.Alias("r", "relevantPrefix", "which metrics to consider in endpoint output (comma-separated)")
 
-	if !whiteflag.CheckString("m") || !whiteflag.CheckString("f") {
+	if !whiteflag.FlagPresent("m") || !whiteflag.FlagPresent("f") {
 		println("usage: sensu-metric-bridge -m <measurementName> -f <fromEndpoint> [-r <relevantPrefix>]")
 		os.Exit(1)
 	}
